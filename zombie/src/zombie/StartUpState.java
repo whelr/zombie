@@ -17,7 +17,7 @@ public class StartUpState extends BasicGameState {
 	
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-		g.drawString("Speak 'Space' to Enter", 300, 400);
+		g.drawString("Speak 'Space' to Enter", 225, 300);
 	}
 
 	@Override
