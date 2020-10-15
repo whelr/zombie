@@ -5,6 +5,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.Input;
 
 public class StartUpState extends BasicGameState {
 
@@ -13,23 +14,24 @@ public class StartUpState extends BasicGameState {
 		// TODO Auto-generated method stub
 		
 	}
-
+	
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-		// TODO Auto-generated method stub
-		
+		g.drawString("Speak 'Space' to Enter", 300, 400);
 	}
 
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
-		// TODO Auto-generated method stub
+		Input input = container.getInput();
+		ZombieGame zg = (ZombieGame)game;
 		
+		if(input.isKeyDown(Input.KEY_SPACE))
+			zg.enterState(ZombieGame.PLAYINGSTATE);
 	}
 
 	@Override
 	public int getID() {
-		// TODO Auto-generated method stub
-		return 0;
+		return ZombieGame.STARTUPSTATE;
 	}
 
 }

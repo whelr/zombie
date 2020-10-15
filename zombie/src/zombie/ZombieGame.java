@@ -31,7 +31,7 @@ public class ZombieGame extends StateBasedGame {
 		AppGameContainer app;
 		try {
 			app = new AppGameContainer(new ZombieGame("Zombies!", 800, 600));
-			app.setDisplayMode(800, 600, false);
+			app.setDisplayMode(600, 600, false);
 			app.setVSync(true);
 			app.start();
 		} catch (SlickException e) {
