@@ -1,8 +1,8 @@
 ## Resolved Issues ##
+- **[1]** Need a skeletal, executable game
 
 
 ## Open Issues ##
-- **[1]** Need a skeletal, executable game
 - **[2]** Create a play state with a tile map.
 - **[3]** Add a player controllable character, WASD
 - **[4]** Add more issues.
