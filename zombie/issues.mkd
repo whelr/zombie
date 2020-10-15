@@ -1,9 +1,12 @@
 ## Resolved Issues ##
 - **[1]** Need a skeletal, executable game
 - **[2]** Create a start and play state with a tile map.
-
+- **[3]** Add a player controllable character, WASD
 
 ## Open Issues ##
-- **[3]** Add a player controllable character, WASD
-- **[4]** Add more issues.
+- **[4]** Make player move from tile to tile, tracking open/closed tiles.
+- **[5]** Add spawned objectives, onto designated tiles.
+- **[6]** Add a zombie that moves around.
+- **[7]** Implement Dijsktra's algorithm to zombie movement.
+- **[8]** Add more issues.
 
