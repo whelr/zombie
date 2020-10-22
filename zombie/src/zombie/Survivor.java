@@ -2,7 +2,6 @@ package zombie;
 
 import jig.Entity;
 import jig.ResourceManager;
-import jig.Vector;
 
 public class Survivor extends Entity {
 	
