@@ -12,18 +12,32 @@ public class PlayingState extends BasicGameState {
 	
 	private TiledMap map;
 	Survivor survivor;
+	
+	boolean WATERED = false;
+	boolean FOODED = false;
+	
+	Item water;
+	Item food;
+	Item rope;
+
+	
 	// tile 0/0 = 60/60, +32 for each 1 tile direction
 	
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
 		map = new TiledMap("zombie/resource/protomap.tmx");
 		
-		for(int x = 0; x <= 15; x++) {
+		/**for(int x = 0; x <= 15; x++) {
 			for(int y = 0; y <= 15; y++) {
 				int tile = map.getTileId(x, y, 0);
 				System.out.println("(" + x + "," + y + ") = " + tile);
 			}
-		}
+		}**/
+		
+		water = new Item(60, 92, 0);
+		food = new Item(60, 188, 1);
+		rope = new Item(60, 124, 2);
+		
 		survivor = new Survivor(60, 60, 0.0f, 0.0f); 
 		survivor.setTileTarget(((int)survivor.getX() - 60) / 32, ((int)survivor.getY() - 60) / 32);
 
@@ -33,7 +47,12 @@ public class PlayingState extends BasicGameState {
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 		map.render(44, 44); //600 size - 44 border = 512x512 tile map
+		water.render(g);
+		food.render(g);
 		survivor.render(g);
+		if(WATERED && FOODED) {
+			rope.render(g);
+		}
 	}
 
 	@Override
@@ -93,6 +112,23 @@ public class PlayingState extends BasicGameState {
 						}
 					}
 				}
+			}
+		}
+		
+		if(survivor.collides(water) != null) {
+			water.acquire(Item.WATER);
+			game.enterState(ZombieGame.PLAYINGSTATE);
+			WATERED = true;
+		}
+		
+		if(survivor.collides(food) != null) {
+			food.acquire(Item.FOOD);
+			FOODED = true;
+		}
+		
+		if(survivor.collides(rope) != null) {
+			if(WATERED && FOODED) {
+				survivor.setDesiredDirection(Survivor.STILL);
 			}
 		}
 		
