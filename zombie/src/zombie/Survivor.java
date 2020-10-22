@@ -13,14 +13,17 @@ public class Survivor extends Entity {
 	public static final int DOWN = 4;
 	
 	private int direction;
-	private Vector velocity;
+	private int desiredDirection;
+	
+	private int tileTargetX;
+	private int tileTargetY;
 
 	
 	public Survivor(final float x, final float y, final float vx, final float vy) {
 		super(x, y);
 		addImageWithBoundingBox(ResourceManager.getImage(ZombieGame.SURVIVORIMG_RSC));
 		direction = STILL;
-		velocity = new Vector(vx, vy);
+		desiredDirection = STILL;
 	}
 	
 	public int getDirection() {
@@ -28,34 +31,57 @@ public class Survivor extends Entity {
 	}
 	
 	public void setDirection(int dir) {
-		if(dir == STILL) {
-			velocity = new Vector(0.0f, 0.0f);	
-		}
-		if(dir == UP) {
-			velocity = new Vector(0.0f, -0.05f);	
-		}
-		if(dir == RIGHT) {
-			velocity = new Vector(0.05f, 0.f);	
-		}
-		if(dir == LEFT) {
-			velocity = new Vector(-0.05f, 0.f);	
-		}
-		if(dir == DOWN) {
-			velocity = new Vector(0.0f, 0.05f);	
-		}
 		direction = dir;
 	}
 	
-	public void setVelocity(final Vector v) {
-		velocity = v;
+	public int getDesiredDirection() {
+		return desiredDirection;
 	}
 	
-	public Vector getVelocity() {
-		return velocity;
+	public void setDesiredDirection(int ddir) {
+		desiredDirection = ddir;
 	}
+	
+	public void setTileTarget(int tx, int ty) {
+		tileTargetX = tx;
+		tileTargetY = ty;
+	}
+
+	
 	
 	public void update(final int delta) {
-		translate(velocity.scale(delta));
+		if(direction == DOWN) {
+			if(this.getY() + delta * 0.05f >= tileTargetY * 32 + 60) {
+				this.setY(tileTargetY * 32 + 60);
+				this.setDirection(STILL);
+			} else {
+				this.setY(this.getY() + delta * 0.05f);	
+			}
+		}
+		if(direction == UP) {
+			if(this.getY() + delta * -0.05f <= tileTargetY * 32 + 60) {
+				this.setY(tileTargetY * 32 + 60);
+				this.setDirection(STILL);
+			} else {
+				this.setY(this.getY() + delta * -0.05f);	
+			}
+		}
+		if(direction == RIGHT) {
+			if(this.getX() + delta * 0.05f >= tileTargetX * 32 + 60) {
+				this.setX(tileTargetX * 32 + 60);
+				this.setDirection(STILL);
+			} else {
+				this.setX(this.getX() + delta * 0.05f);	
+			}
+		}
+		if(direction == LEFT) {
+			if(this.getX() + delta * -0.05f <= tileTargetX * 32 + 60) {
+				this.setX(tileTargetX * 32 + 60);
+				this.setDirection(STILL);
+			} else {
+				this.setX(this.getX() + delta * -0.05f);	
+			}
+		}
 	}
 	
 }
