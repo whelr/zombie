@@ -7,7 +7,7 @@
 
 
 ## Open Issues ##
-- **[6]** Add a zombie that moves around.
-- **[7]** Implement Dijsktra's algorithm to zombie movement.
+- **[6]** Dijsktra's algorithm to grid tiles.
+- **[7]** Add a zombie, and incorporate dijsktras.
 - **[8]** Add more issues.
 
