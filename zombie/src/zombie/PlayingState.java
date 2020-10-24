@@ -1,5 +1,7 @@
 package zombie;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.PriorityQueue;
 
 import org.newdawn.slick.Color;
@@ -16,7 +18,8 @@ public class PlayingState extends BasicGameState {
 	boolean overlay = false;
 	
 	private TiledMap map;
-	Survivor survivor;
+	Humanoid survivor;
+	Humanoid zombie;
 	
 	int[][] dist;
 	
@@ -57,8 +60,18 @@ public class PlayingState extends BasicGameState {
 		food = new Item(380, 380, 1);
 		rope = new Item(60, 124, 2);
 		
-		survivor = new Survivor(60, 60, 0.0f, 0.0f); 
+		survivor = new Humanoid(60, 60, 0); 
 		survivor.setTileTarget(((int)survivor.getX() - 60) / 32, ((int)survivor.getY() - 60) / 32);
+		
+		zombie = new Humanoid(540, 540, 1);
+		
+		dist = new int[map.getWidth()][map.getHeight()];
+		for(int x = 0; x <= map.getWidth()-1; x++) {
+			for(int y = 0; y <= map.getHeight()-1; y++) {
+				dist[x][y] = Integer.MAX_VALUE;
+			}
+		}
+
 
 		//tile 0 center = 60x60y = 44 border + 16 (1/2 tile width)
 	}
@@ -69,6 +82,7 @@ public class PlayingState extends BasicGameState {
 		water.render(g);
 		food.render(g);
 		survivor.render(g);
+		zombie.render(g);
 		if(WATERED && FOODED) {
 			rope.render(g);
 		}
@@ -85,7 +99,6 @@ public class PlayingState extends BasicGameState {
 	}
 	
 	public void dijkstra(TiledMap graph, int srcX, int srcY) {
-		dist = new int[map.getWidth()][map.getHeight()];
 		PriorityQueue<CoordSet> Q = new PriorityQueue<CoordSet>();
 		
 		for(int x = 0; x <= map.getWidth()-1; x++) {
@@ -143,69 +156,134 @@ public class PlayingState extends BasicGameState {
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 		Input input = container.getInput();
 		
+		int zombTX = ((int)zombie.getX() - 60) / 32;
+		int zombTY = ((int)zombie.getY() - 60) / 32;
+		
 		int currTX = ((int)survivor.getX() - 60) / 32;
 		int currTY = ((int)survivor.getY() - 60) / 32;
+		
+		
 		if((currTX != lastTX) || (currTY != lastTY)) {
+			this.dijkstra(map, currTX, currTY);
 			lastTX = currTX;
 			lastTY = currTY;
-			this.dijkstra(map, currTX, currTY);
 		}
 		
 		if(input.isKeyDown(Input.KEY_W)) {
-			survivor.setDesiredDirection(Survivor.UP);
+			survivor.setDesiredDirection(Humanoid.UP);
 		}
 		
 		if(input.isKeyDown(Input.KEY_A)) {
-			survivor.setDesiredDirection(Survivor.LEFT);
+			survivor.setDesiredDirection(Humanoid.LEFT);
 		}
 		
 		if(input.isKeyDown(Input.KEY_S)) {
-			survivor.setDesiredDirection(Survivor.DOWN);
+			survivor.setDesiredDirection(Humanoid.DOWN);
 		}
 		
 		if(input.isKeyDown(Input.KEY_D)) {
-			survivor.setDesiredDirection(Survivor.RIGHT);
+			survivor.setDesiredDirection(Humanoid.RIGHT);
 		}
 		
 		if(input.isKeyDown(Input.KEY_Q)) {
 			overlay = true;
 		}
+	
 		
 		if(survivor.getDirection() != survivor.getDesiredDirection()) {
-			if(survivor.getDirection() == Survivor.STILL) {
-				if(survivor.getDesiredDirection() == Survivor.UP) {
+			if(survivor.getDirection() == Humanoid.STILL) {
+				if(survivor.getDesiredDirection() == Humanoid.UP) {
 					if(currTY - 1 >= 0) {
 						if (map.getTileId(currTX, currTY - 1, 0) == 1 ) {
 							survivor.setTileTarget(currTX, currTY - 1);
-							survivor.setDirection(Survivor.UP);
+							survivor.setDirection(Humanoid.UP);
 						}
 					}
 				}
-				if(survivor.getDesiredDirection() == Survivor.DOWN) {
-					if(currTY + 1 <= 15) {
+				if(survivor.getDesiredDirection() == Humanoid.DOWN) {
+					if(currTY + 1 <= map.getHeight()-1) {
 						if (map.getTileId(currTX, currTY + 1, 0) == 1 ) {
 							survivor.setTileTarget(currTX, currTY + 1);	
-							survivor.setDirection(Survivor.DOWN);
+							survivor.setDirection(Humanoid.DOWN);
 						}
 					}
 				}
-				if(survivor.getDesiredDirection() == Survivor.LEFT) {
+				if(survivor.getDesiredDirection() == Humanoid.LEFT) {
 					if(currTX - 1 >= 0) {
 						if (map.getTileId(currTX - 1, currTY, 0) == 1 ) {
 							survivor.setTileTarget(currTX - 1, currTY);
-							survivor.setDirection(Survivor.LEFT);
+							survivor.setDirection(Humanoid.LEFT);
 						}
 					}
 				}
-				if(survivor.getDesiredDirection() == Survivor.RIGHT) {
-					if(currTX + 1 <= 15) {
+				if(survivor.getDesiredDirection() == Humanoid.RIGHT) {
+					if(currTX + 1 <= map.getWidth()-1) {
 						if (map.getTileId(currTX + 1, currTY, 0) == 1 ) {
 							survivor.setTileTarget(currTX + 1, currTY);
-							survivor.setDirection(Survivor.RIGHT);
+							survivor.setDirection(Humanoid.RIGHT);
 						}
 					}
 				}
 			}
+		}
+		
+		if(zombie.getDirection() == Humanoid.STILL) {
+			Map<String, Integer> choices = new HashMap<String, Integer>();
+			choices.put("Still", dist[zombTX][zombTY]);
+			if(zombTX - 1 >= 0) {
+				if (map.getTileId(zombTX - 1, zombTY, 0) == 1 ) {
+					choices.put("Left", dist[zombTX-1][zombTY]);
+				}
+			}
+			if(zombTX + 1 <= map.getWidth()-1) {
+				if (map.getTileId(zombTX + 1, zombTY, 0) == 1 ) {
+					choices.put("Right", dist[zombTX+1][zombTY]);
+				}
+			}
+			if(zombTY - 1 >= 0) {
+				if (map.getTileId(zombTX, zombTY - 1, 0) == 1 ) {
+					choices.put("Up", dist[zombTX][zombTY-1]);
+				}
+			}
+			if(zombTY + 1 <= map.getHeight()-1) {
+				if (map.getTileId(zombTX, zombTY + 1, 0) == 1 ) {
+					choices.put("Down", dist[zombTX][zombTY+1]);
+				}
+			}
+			
+			int distance = dist[zombTX][zombTY];
+			int NextX = zombTX;
+			int NextY = zombTY;
+			int NextDir = Humanoid.STILL;
+			
+			if(choices.containsKey("Right")) {
+				if(choices.get("Right") <= distance) {
+					NextX++;
+					NextDir = Humanoid.RIGHT;
+				}
+			}
+			if(choices.containsKey("Left")) {
+				if(choices.get("Left") <= distance) {
+					NextX--;
+					NextDir = Humanoid.LEFT;
+				}
+			}
+			if(choices.containsKey("Up")) {
+				if(choices.get("Up") <= distance) {
+					NextY--;
+					NextDir = Humanoid.UP;
+				}
+			}
+			if(choices.containsKey("Down")) {
+				if(choices.get("Down") <= distance) {
+					NextY++;
+					NextDir = Humanoid.DOWN;
+				}
+			}
+			
+			zombie.setTileTarget(NextX, NextY);
+			zombie.setDirection(NextDir);			
+			
 		}
 		
 		if(survivor.collides(water) != null) {
@@ -225,7 +303,13 @@ public class PlayingState extends BasicGameState {
 			}
 		}
 		
+		if(survivor.collides(zombie) != null) {
+			game.enterState(ZombieGame.GAMEOVERSTATE);
+		}
+		
 		survivor.update(delta);
+		zombie.update(delta);
+		
 		
 	}
 

@@ -15,6 +15,7 @@ public class ZombieGame extends StateBasedGame {
 	public static final int GAMEOVERSTATE = 2;
 	
 	public static final String SURVIVORIMG_RSC = "zombie/resource/survivor.png";
+	public static final String ZOMBIEIMG_RSC = "zombie/resource/zombie.png";
 	public static final String WATERIMG_RSC = "zombie/resource/water.png";
 	public static final String FOODIMG_RSC = "zombie/resource/food.png";
 	public static final String ROPEIMG_RSC = "zombie/resource/rope.png";
@@ -38,6 +39,7 @@ public class ZombieGame extends StateBasedGame {
 		addState(new PlayingState());
 		
 		ResourceManager.loadImage(SURVIVORIMG_RSC);
+		ResourceManager.loadImage(ZOMBIEIMG_RSC);
 		ResourceManager.loadImage(WATERIMG_RSC);
 		ResourceManager.loadImage(FOODIMG_RSC);
 		ResourceManager.loadImage(ROPEIMG_RSC);
