@@ -10,9 +10,8 @@
 
 ## Open Issues ##
 - **[8]** Add more levels.
-- **[9]** Better graphic design.
-- **[10]** Add sounds
-- **[11]** Better gameover screen.
-- **[12]** Better startup menu,
-- **[13]** Add more ideas.
+- **[9]** Add sounds
+- **[10]** Better gameover screen.
+- **[11]** Better startup menu,
+- **[12]** Add more ideas.
 

@@ -318,7 +318,13 @@ public class PlayingState extends BasicGameState {
 		
 		if(survivor.collides(rope) != null) {
 			if(WATERED && FOODED) {
-				game.enterState(ZombieGame.GAMEOVERSTATE);
+				if(zg.level < 2) {
+					zg.level++;
+					zg.getCurrentState().init(container, game);	
+				}
+				if(zg.level >= 2) {
+					zg.enterState(ZombieGame.GAMEOVERSTATE);
+				}
 			}
 		}
 		
