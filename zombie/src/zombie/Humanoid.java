@@ -3,7 +3,7 @@ package zombie;
 import jig.Entity;
 import jig.ResourceManager;
 
-public class Survivor extends Entity {
+public class Humanoid extends Entity {
 	
 	public static final int STILL = 0;
 	public static final int UP = 1;
@@ -18,9 +18,14 @@ public class Survivor extends Entity {
 	private int tileTargetY;
 
 	
-	public Survivor(final float x, final float y, final float vx, final float vy) {
+	public Humanoid(final float x, final float y, final int type) {
 		super(x, y);
-		addImageWithBoundingBox(ResourceManager.getImage(ZombieGame.SURVIVORIMG_RSC));
+		if(type == 0) {
+			addImageWithBoundingBox(ResourceManager.getImage(ZombieGame.SURVIVORIMG_RSC));
+		}
+		if(type == 1) {
+			addImageWithBoundingBox(ResourceManager.getImage(ZombieGame.ZOMBIEIMG_RSC));
+		}
 		direction = STILL;
 		desiredDirection = STILL;
 	}
