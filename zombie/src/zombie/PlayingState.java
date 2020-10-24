@@ -1,5 +1,8 @@
 package zombie;
 
+import java.util.PriorityQueue;
+
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
@@ -10,8 +13,12 @@ import org.newdawn.slick.tiled.TiledMap;
 
 public class PlayingState extends BasicGameState {
 	
+	boolean overlay = false;
+	
 	private TiledMap map;
 	Survivor survivor;
+	
+	int[][] dist;
 	
 	boolean WATERED = false;
 	boolean FOODED = false;
@@ -19,23 +26,35 @@ public class PlayingState extends BasicGameState {
 	Item water;
 	Item food;
 	Item rope;
-
 	
+	int lastTX;
+	int lastTY;
+	
+	public class CoordSet implements Comparable<CoordSet> {
+		int x;
+		int y;
+		int dist;
+		
+		CoordSet(int xx, int yy, int d) {
+			x = xx;
+			y = yy;
+			dist = d;
+		}
+
+		@Override
+		public int compareTo(CoordSet o) {
+			return Integer.compare(this.dist, o.dist);
+		}
+	}
+
 	// tile 0/0 = 60/60, +32 for each 1 tile direction
 	
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
 		map = new TiledMap("zombie/resource/protomap.tmx");
-		
-		/**for(int x = 0; x <= 15; x++) {
-			for(int y = 0; y <= 15; y++) {
-				int tile = map.getTileId(x, y, 0);
-				System.out.println("(" + x + "," + y + ") = " + tile);
-			}
-		}**/
-		
+
 		water = new Item(60, 92, 0);
-		food = new Item(60, 188, 1);
+		food = new Item(380, 380, 1);
 		rope = new Item(60, 124, 2);
 		
 		survivor = new Survivor(60, 60, 0.0f, 0.0f); 
@@ -53,6 +72,71 @@ public class PlayingState extends BasicGameState {
 		if(WATERED && FOODED) {
 			rope.render(g);
 		}
+		if(overlay) {
+			for(int x = 0; x <= 15; x++) {
+				for(int y = 0; y <= 15; y++) {
+					if(dist[x][y] != Integer.MAX_VALUE) {
+						g.setColor(Color.black);
+						g.drawString("" + dist[x][y], x*32 + 54, y*32 + 50);
+					}
+				}
+			}
+		}
+	}
+	
+	public void dijkstra(TiledMap graph, int srcX, int srcY) {
+		dist = new int[map.getWidth()][map.getHeight()];
+		PriorityQueue<CoordSet> Q = new PriorityQueue<CoordSet>();
+		
+		for(int x = 0; x <= map.getWidth()-1; x++) {
+			for(int y = 0; y <= map.getHeight()-1; y++) {
+				//for each tile on graph:
+				
+				CoordSet coord = new CoordSet(x, y, 0);
+				if(!((x == srcX) && (y == srcY))) {
+					dist[x][y] = Integer.MAX_VALUE; // default infinity
+					coord.dist = Integer.MAX_VALUE;
+				} else {
+					dist[x][y] = 0; // source = 0
+					Q.add(coord);
+				}
+			}
+		}
+				
+		while (!Q.isEmpty()) {
+			CoordSet u = Q.poll();
+			
+			if(u.y + 1 <= map.getHeight()-1) {
+				if((map.getTileId(u.x, u.y+1, 0) == 1)  && (dist[u.x][u.y + 1] > dist[u.x][u.y])) {
+					dist[u.x][u.y+1] = dist[u.x][u.y]+1;
+					Q.add(new CoordSet(u.x, u.y+1, dist[u.x][u.y]+1));
+				}
+			}
+
+			if(u.x + 1 <= map.getWidth()-1) {
+				if((map.getTileId(u.x+1, u.y, 0) == 1)  && (dist[u.x+1][u.y] > dist[u.x][u.y])) {
+					dist[u.x+1][u.y] = dist[u.x][u.y]+1;
+					Q.add(new CoordSet(u.x+1, u.y, dist[u.x][u.y]+1));
+				}
+			}
+			
+			if(u.y - 1 >= 0) {
+				if((map.getTileId(u.x, u.y-1, 0) == 1)  && (dist[u.x][u.y-1] > dist[u.x][u.y])) {
+					dist[u.x][u.y-1] = dist[u.x][u.y]+1;
+					Q.add(new CoordSet(u.x, u.y-1, dist[u.x][u.y]+1));
+				}
+			}
+
+			if(u.x - 1 >= 0) {
+				if((map.getTileId(u.x-1, u.y, 0) == 1) && (dist[u.x-1][u.y] > dist[u.x][u.y])) {
+					dist[u.x-1][u.y] = dist[u.x][u.y]+1;
+					Q.add(new CoordSet(u.x-1, u.y, dist[u.x][u.y]+1));
+				}
+			}
+			
+
+		}
+		
 	}
 
 	@Override
@@ -61,6 +145,11 @@ public class PlayingState extends BasicGameState {
 		
 		int currTX = ((int)survivor.getX() - 60) / 32;
 		int currTY = ((int)survivor.getY() - 60) / 32;
+		if((currTX != lastTX) || (currTY != lastTY)) {
+			lastTX = currTX;
+			lastTY = currTY;
+			this.dijkstra(map, currTX, currTY);
+		}
 		
 		if(input.isKeyDown(Input.KEY_W)) {
 			survivor.setDesiredDirection(Survivor.UP);
@@ -76,6 +165,10 @@ public class PlayingState extends BasicGameState {
 		
 		if(input.isKeyDown(Input.KEY_D)) {
 			survivor.setDesiredDirection(Survivor.RIGHT);
+		}
+		
+		if(input.isKeyDown(Input.KEY_Q)) {
+			overlay = true;
 		}
 		
 		if(survivor.getDirection() != survivor.getDesiredDirection()) {
@@ -128,7 +221,7 @@ public class PlayingState extends BasicGameState {
 		
 		if(survivor.collides(rope) != null) {
 			if(WATERED && FOODED) {
-				survivor.setDesiredDirection(Survivor.STILL);
+				game.enterState(ZombieGame.GAMEOVERSTATE);
 			}
 		}
 		
