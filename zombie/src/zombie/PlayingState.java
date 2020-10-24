@@ -54,7 +54,16 @@ public class PlayingState extends BasicGameState {
 	
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
-		map = new TiledMap("zombie/resource/protomap.tmx");
+		
+		ZombieGame zg = (ZombieGame)game;
+		if(zg.level == 1) {
+			map = new TiledMap("zombie/resource/level1.tmx");
+		}
+		if(zg.level == 2) {
+			map = new TiledMap("zombie/resource/level2.tmx");
+
+		}
+		
 
 		water = new Item(60, 92, 0);
 		food = new Item(380, 380, 1);
@@ -155,6 +164,7 @@ public class PlayingState extends BasicGameState {
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 		Input input = container.getInput();
+		ZombieGame zg = (ZombieGame)game;
 		
 		int zombTX = ((int)zombie.getX() - 60) / 32;
 		int zombTY = ((int)zombie.getY() - 60) / 32;
@@ -189,6 +199,15 @@ public class PlayingState extends BasicGameState {
 			overlay = true;
 		}
 	
+		if(input.isKeyDown(Input.KEY_1)) {
+			zg.level = 1;
+			zg.getCurrentState().init(container, game);
+		}
+		
+		if(input.isKeyDown(Input.KEY_2)) {
+			zg.level = 2;
+			zg.getCurrentState().init(container, game);
+		}
 		
 		if(survivor.getDirection() != survivor.getDesiredDirection()) {
 			if(survivor.getDirection() == Humanoid.STILL) {
