@@ -24,6 +24,8 @@ public class ZombieGame extends StateBasedGame {
 	public final int ScreenWidth;
 	public final int ScreenHeight;
 	
+	public int level = 1;
+	
 	public ZombieGame(String title, int width, int height) {
 		super(title);
 		ScreenHeight = height;

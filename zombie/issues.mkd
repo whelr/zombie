@@ -5,9 +5,13 @@
 - **[4]** Make player move from tile to tile, tracking open/closed tiles.
 - **[5]** Add spawned objectives, onto designated tiles.
 - **[6]** Dijsktra's algorithm to grid tiles.
+- **[7]** Add a zombie, and incorporate dijsktras.
 
 
 ## Open Issues ##
-- **[7]** Add a zombie, and incorporate dijsktras.
-- **[8]** Add more issues.
+- **[8]** Add more levels.
+- **[9]** Add sounds
+- **[10]** Better gameover screen.
+- **[11]** Better startup menu,
+- **[12]** Add more ideas.
 
