@@ -14,8 +14,8 @@ public class Humanoid extends Entity {
 	private int direction;
 	private int desiredDirection;
 	
-	private int tileTargetX;
-	private int tileTargetY;
+	public int tileTargetX;
+	public int tileTargetY;
 
 	
 	public Humanoid(final float x, final float y, final int type) {
@@ -55,35 +55,35 @@ public class Humanoid extends Entity {
 	
 	public void update(final int delta) {
 		if(direction == DOWN) {
-			if(this.getY() + delta * 0.05f >= tileTargetY * 32 + 60) {
+			if(this.getY() + delta * 0.04f >= tileTargetY * 32 + 60) {
 				this.setY(tileTargetY * 32 + 60);
 				this.setDirection(STILL);
 			} else {
-				this.setY(this.getY() + delta * 0.05f);	
+				this.setY(this.getY() + delta * 0.04f);	
 			}
 		}
 		if(direction == UP) {
-			if(this.getY() + delta * -0.05f <= tileTargetY * 32 + 60) {
+			if(this.getY() + delta * -0.04f <= tileTargetY * 32 + 60) {
 				this.setY(tileTargetY * 32 + 60);
 				this.setDirection(STILL);
 			} else {
-				this.setY(this.getY() + delta * -0.05f);	
+				this.setY(this.getY() + delta * -0.04f);	
 			}
 		}
 		if(direction == RIGHT) {
-			if(this.getX() + delta * 0.05f >= tileTargetX * 32 + 60) {
+			if(this.getX() + delta * 0.04f >= tileTargetX * 32 + 60) {
 				this.setX(tileTargetX * 32 + 60);
 				this.setDirection(STILL);
 			} else {
-				this.setX(this.getX() + delta * 0.05f);	
+				this.setX(this.getX() + delta * 0.04f);	
 			}
 		}
 		if(direction == LEFT) {
-			if(this.getX() + delta * -0.05f <= tileTargetX * 32 + 60) {
+			if(this.getX() + delta * -0.04f <= tileTargetX * 32 + 60) {
 				this.setX(tileTargetX * 32 + 60);
 				this.setDirection(STILL);
 			} else {
-				this.setX(this.getX() + delta * -0.05f);	
+				this.setX(this.getX() + delta * -0.04f);	
 			}
 		}
 	}
