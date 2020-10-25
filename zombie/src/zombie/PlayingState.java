@@ -92,7 +92,7 @@ public class PlayingState extends BasicGameState {
 		
 		survivor = new Humanoid(getTCenter(0), getTCenter(0), 0); //top left	
 		zombie = new Humanoid(getTCenter(15), getTCenter(15), 1); //bottom right
-		rope = new Item(getTCenter(15), getTCenter(15), 2);
+		rope = new Item(getTCenter(14), getTCenter(14), 2);
 	
 		dist = new int[map.getWidth()][map.getHeight()];
 		for(int x = 0; x <= map.getWidth()-1; x++) {
