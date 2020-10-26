@@ -16,6 +16,7 @@ import org.newdawn.slick.tiled.TiledMap;
 public class PlayingState extends BasicGameState {
 	
 	boolean overlay = false;
+	boolean godded = false;
 	
 	private TiledMap map;
 	Humanoid survivor;
@@ -123,17 +124,22 @@ public class PlayingState extends BasicGameState {
 		if(WATERED && FOODED) {
 			door.render(g);
 		}
+				
+		if(godded) {
+			g.setColor(Color.white);
+
+			g.drawString("GODEMODE ENBABLED!", 200, 25);
+		}
 		
+		g.setColor(Color.white);
 		g.drawString("Level: " + level, 475, 25);
 		
 		if(overlay) {
 			for(int x = 0; x <= 15; x++) {
 				for(int y = 0; y <= 15; y++) {
 					if(dist[x][y] != Integer.MAX_VALUE) {
-						g.setColor(Color.black);
 						g.drawString("" + dist[x][y], x*32 + 54, y*32 + 50);
 					} else {
-						g.setColor(Color.black);
 						g.drawString("X", x*32 + 54, y*32 + 50);
 					}
 				}
@@ -210,13 +216,6 @@ public class PlayingState extends BasicGameState {
 		int currTX = ((int)survivor.getX() - 60) / 32;
 		int currTY = ((int)survivor.getY() - 60) / 32;
 		
-		
-		if((currTX != lastTX) || (currTY != lastTY)) {
-			this.dijkstra(map, survivor.tileTargetX, survivor.tileTargetY, zombTX, zombTY);
-			lastTX = currTX;
-			lastTY = currTY;
-		}
-		
 		if(input.isKeyPressed(Input.KEY_W)) {
 			survivor.setDesiredDirection(Humanoid.UP);
 		}
@@ -233,11 +232,35 @@ public class PlayingState extends BasicGameState {
 			survivor.setDesiredDirection(Humanoid.RIGHT);
 		}
 		
+		if(input.isKeyPressed(Input.KEY_UP)) {
+			survivor.setDesiredDirection(Humanoid.UP);
+		}
+		
+		if(input.isKeyPressed(Input.KEY_LEFT)) {
+			survivor.setDesiredDirection(Humanoid.LEFT);
+		}
+		
+		if(input.isKeyPressed(Input.KEY_DOWN)) {
+			survivor.setDesiredDirection(Humanoid.DOWN);
+		}
+		
+		if(input.isKeyPressed(Input.KEY_RIGHT)) {
+			survivor.setDesiredDirection(Humanoid.RIGHT);
+		}
+		
 		if(input.isKeyPressed(Input.KEY_Q)) {
 			if (overlay) {
 				overlay = false;
 			} else {
 				overlay = true;
+			}
+		}
+		
+		if(input.isKeyPressed(Input.KEY_G)) {
+			if (godded) {
+				godded = false;
+			} else {
+				godded = true;
 			}
 		}
 		
@@ -247,6 +270,7 @@ public class PlayingState extends BasicGameState {
 					if(currTY - 1 >= 0) {
 						if (map.getTileId(currTX, currTY - 1, 0) == 1 ) {
 							survivor.setTileTarget(currTX, currTY - 1);
+							this.dijkstra(map, survivor.tileTargetX, survivor.tileTargetY, zombTX, zombTY);
 							survivor.setDirection(Humanoid.UP);
 						}
 					}
@@ -255,6 +279,7 @@ public class PlayingState extends BasicGameState {
 					if(currTY + 1 <= map.getHeight()-1) {
 						if (map.getTileId(currTX, currTY + 1, 0) == 1 ) {
 							survivor.setTileTarget(currTX, currTY + 1);	
+							this.dijkstra(map, survivor.tileTargetX, survivor.tileTargetY, zombTX, zombTY);
 							survivor.setDirection(Humanoid.DOWN);
 						}
 					}
@@ -263,6 +288,8 @@ public class PlayingState extends BasicGameState {
 					if(currTX - 1 >= 0) {
 						if (map.getTileId(currTX - 1, currTY, 0) == 1 ) {
 							survivor.setTileTarget(currTX - 1, currTY);
+							this.dijkstra(map, survivor.tileTargetX, survivor.tileTargetY, zombTX, zombTY);
+
 							survivor.setDirection(Humanoid.LEFT);
 						}
 					}
@@ -271,10 +298,17 @@ public class PlayingState extends BasicGameState {
 					if(currTX + 1 <= map.getWidth()-1) {
 						if (map.getTileId(currTX + 1, currTY, 0) == 1 ) {
 							survivor.setTileTarget(currTX + 1, currTY);
+							this.dijkstra(map, survivor.tileTargetX, survivor.tileTargetY, zombTX, zombTY);
 							survivor.setDirection(Humanoid.RIGHT);
 						}
 					}
 				}
+			}
+		} else {
+			if((currTX != lastTX) || (currTY != lastTY)) {
+				this.dijkstra(map, survivor.tileTargetX, survivor.tileTargetY, zombTX, zombTY);
+				lastTX = currTX;
+				lastTY = currTY;
 			}
 		}
 		
@@ -315,8 +349,6 @@ public class PlayingState extends BasicGameState {
 				if(choices.get("Down") <= distance) {
 					NextY++;
 					NextDir = Humanoid.DOWN;
-					if(overlay) {
-					}
 				}
 			}
 			if(choices.containsKey("Left")) {
@@ -361,9 +393,11 @@ public class PlayingState extends BasicGameState {
 		}
 		
 		if(survivor.collides(zombie) != null) {
-			zg.dead = true;
-			zg.enterState(ZombieGame.GAMEOVERSTATE);
-			return;
+			if(!godded) {
+				zg.dead = true;
+				zg.enterState(ZombieGame.GAMEOVERSTATE);
+				return;	
+			}
 		}
 		
 		survivor.update(delta);

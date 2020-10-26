@@ -8,8 +8,8 @@
 - **[7]** Add a zombie, and incorporate dijsktras.
 - **[8]** Add more levels.
 - **[9]** Add item/character sprites and startup
+- **[10]** Better gameover screen.
 
 ## Open Issues ##
-- **[10]** Better gameover screen.
-- **[11]** Add more ideas.
+- **[11]** Add god mode toggle.
 
