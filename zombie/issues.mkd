@@ -9,7 +9,7 @@
 - **[8]** Add more levels.
 - **[9]** Add item/character sprites and startup
 - **[10]** Better gameover screen.
+- **[11]** Add god mode toggle.
 
 ## Open Issues ##
-- **[11]** Add god mode toggle.
 
