@@ -37,9 +37,10 @@ public class StartUpState extends BasicGameState {
 		g.drawString("Speak 'Space' to Enter", 190, 350);
 		
 		g.drawString("Controls:", 25, 400);
-		g.drawString("WASD - Movement.", 35, 420);
+		g.drawString("WASD or ARROW KEYS for Movement.", 35, 420);
 		g.drawString("1, 2, 3, 4, 5 to level skip.", 35, 440);
-		g.drawString("Q to enabled Dijkstra's overlay.", 35, 460);
+		g.drawString("Q to toggle Dijkstra's overlay.", 35, 460);
+		g.drawString("G to toggle godded mode.", 35, 480);
 
 		survivor.render(g);
 		zombie.render(g);
