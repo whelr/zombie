@@ -13,7 +13,7 @@ public class StartUpState extends BasicGameState {
 	Humanoid zombie;
 	Item food;
 	Item water;
-	Item rope;
+	Item DOOR;
 	
 	boolean starting = false;
 	
@@ -23,7 +23,7 @@ public class StartUpState extends BasicGameState {
 		survivor = new Humanoid(150, 150, 0); //bottom right
 		water = new Item(200, 150, 0); //7/1
 		food = new Item(250, 150, 1); //6/11
-		rope = new Item(500, 150, 2); //6/11
+		DOOR = new Item(500, 150, 2); //6/1/
 	}
 	
 	@Override
@@ -45,7 +45,7 @@ public class StartUpState extends BasicGameState {
 		zombie.render(g);
 		food.render(g);
 		water.render(g);
-		rope.render(g);
+		DOOR.render(g);
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class StartUpState extends BasicGameState {
 		ZombieGame zg = (ZombieGame)game;
 		
 		if(starting) {
-			survivor.setX(survivor.getX() + delta * 0.07f);	
+			survivor.setX(survivor.getX() + delta * 0.06f);	
 			zombie.setX(zombie.getX() + delta * 0.07f);	
 		}
 		
@@ -67,8 +67,10 @@ public class StartUpState extends BasicGameState {
 		if(survivor.collides(food) != null)
 			food.acquire(Item.FOOD);
 		
-		if(survivor.collides(rope) != null)
+		if(survivor.collides(DOOR) != null) {
+			zg.getState(ZombieGame.PLAYINGSTATE).init(container, game);
 			zg.enterState(ZombieGame.PLAYINGSTATE);
+		}
 		
 	}
 

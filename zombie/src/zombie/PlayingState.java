@@ -20,6 +20,7 @@ public class PlayingState extends BasicGameState {
 	private TiledMap map;
 	Humanoid survivor;
 	Humanoid zombie;
+	int level;
 	
 	int[][] dist;
 	
@@ -28,7 +29,7 @@ public class PlayingState extends BasicGameState {
 	
 	Item water;
 	Item food;
-	Item rope;
+	Item door;
 	
 	int lastTX;
 	int lastTY;
@@ -60,49 +61,55 @@ public class PlayingState extends BasicGameState {
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
 		
 		ZombieGame zg = (ZombieGame)game;
-		
+		level = zg.level;
+		zg.dead = false;
 		WATERED = false;
 		FOODED = false;
+		
 		
 		if(zg.level == 1) {
 			map = new TiledMap("zombie/resource/level1.tmx");
 			water = new Item(getTCenter(7), getTCenter(1), 0); //7/1
 			food = new Item(getTCenter(6), getTCenter(11), 1); //6/11
+			zombie = new Humanoid(getTCenter(15), getTCenter(15), 1); //bottom right
 		}
 		if(zg.level == 2) {
 			map = new TiledMap("zombie/resource/level2.tmx");
 			water = new Item(getTCenter(3), getTCenter(14), 0); //3/14
 			food = new Item(getTCenter(14), getTCenter(4), 1); //14/4
+			zombie = new Humanoid(getTCenter(15), getTCenter(15), 1); //bottom right
 		}
 		if(zg.level == 3) {
 			map = new TiledMap("zombie/resource/level3.tmx");
 			water = new Item(getTCenter(6), getTCenter(12), 0); //6/12
 			food = new Item(getTCenter(11), getTCenter(4), 1); //11/4
+			zombie = new Humanoid(getTCenter(15), getTCenter(15), 1); //bottom right
 		}
 		if(zg.level == 4) {
 			map = new TiledMap("zombie/resource/level4.tmx");
 			water = new Item(getTCenter(9), getTCenter(5), 0); //9/5
 			food = new Item(getTCenter(4), getTCenter(14), 1); //4/14
+			zombie = new Humanoid(getTCenter(13), getTCenter(15), 1); //bottom right
 		}
 		if(zg.level == 5) {
 			map = new TiledMap("zombie/resource/level5.tmx");
 			water = new Item(getTCenter(12), getTCenter(6), 0); //12/6
 			food = new Item(getTCenter(1), getTCenter(15), 1); //1/15
+			zombie = new Humanoid(getTCenter(15), getTCenter(15), 1); //bottom right
 		}
 		
-		survivor = new Humanoid(getTCenter(0), getTCenter(0), 0); //top left	
-		zombie = new Humanoid(getTCenter(15), getTCenter(15), 1); //bottom right
-		rope = new Item(getTCenter(14), getTCenter(14), 2);
-	
 		dist = new int[map.getWidth()][map.getHeight()];
 		for(int x = 0; x <= map.getWidth()-1; x++) {
 			for(int y = 0; y <= map.getHeight()-1; y++) {
 				dist[x][y] = Integer.MAX_VALUE;
 			}
 		}
+		
+		survivor = new Humanoid(getTCenter(0), getTCenter(0), 0); //top left	
+		door = new Item(getTCenter(14), getTCenter(14), 2);
+		lastTX = ((int)survivor.getX() - 60) / 32;
+		lastTY = ((int)survivor.getX() - 60) / 32;
 
-
-		//tile 0 center = 60x60y = 44 border + 16 (1/2 tile width)
 	}
 
 	@Override
@@ -114,8 +121,10 @@ public class PlayingState extends BasicGameState {
 		zombie.render(g);
 		
 		if(WATERED && FOODED) {
-			rope.render(g);
+			door.render(g);
 		}
+		
+		g.drawString("Level: " + level, 475, 25);
 		
 		if(overlay) {
 			for(int x = 0; x <= 15; x++) {
@@ -123,6 +132,9 @@ public class PlayingState extends BasicGameState {
 					if(dist[x][y] != Integer.MAX_VALUE) {
 						g.setColor(Color.black);
 						g.drawString("" + dist[x][y], x*32 + 54, y*32 + 50);
+					} else {
+						g.setColor(Color.black);
+						g.drawString("X", x*32 + 54, y*32 + 50);
 					}
 				}
 			}
@@ -205,49 +217,28 @@ public class PlayingState extends BasicGameState {
 			lastTY = currTY;
 		}
 		
-		if(input.isKeyDown(Input.KEY_W)) {
+		if(input.isKeyPressed(Input.KEY_W)) {
 			survivor.setDesiredDirection(Humanoid.UP);
 		}
 		
-		if(input.isKeyDown(Input.KEY_A)) {
+		if(input.isKeyPressed(Input.KEY_A)) {
 			survivor.setDesiredDirection(Humanoid.LEFT);
 		}
 		
-		if(input.isKeyDown(Input.KEY_S)) {
+		if(input.isKeyPressed(Input.KEY_S)) {
 			survivor.setDesiredDirection(Humanoid.DOWN);
 		}
 		
-		if(input.isKeyDown(Input.KEY_D)) {
+		if(input.isKeyPressed(Input.KEY_D)) {
 			survivor.setDesiredDirection(Humanoid.RIGHT);
 		}
 		
-		if(input.isKeyDown(Input.KEY_Q)) {
-			overlay = true;
-		}
-	
-		if(input.isKeyDown(Input.KEY_1)) {
-			zg.level = 1;
-			zg.getCurrentState().init(container, game);
-		}
-		
-		if(input.isKeyDown(Input.KEY_2)) {
-			zg.level = 2;
-			zg.getCurrentState().init(container, game);
-		}
-		
-		if(input.isKeyDown(Input.KEY_3)) {
-			zg.level = 3;
-			zg.getCurrentState().init(container, game);
-		}
-		
-		if(input.isKeyDown(Input.KEY_4)) {
-			zg.level = 4;
-			zg.getCurrentState().init(container, game);
-		}
-		
-		if(input.isKeyDown(Input.KEY_5)) {
-			zg.level = 5;
-			zg.getCurrentState().init(container, game);
+		if(input.isKeyPressed(Input.KEY_Q)) {
+			if (overlay) {
+				overlay = false;
+			} else {
+				overlay = true;
+			}
 		}
 		
 		if(survivor.getDirection() != survivor.getDesiredDirection()) {
@@ -289,7 +280,6 @@ public class PlayingState extends BasicGameState {
 		
 		if(zombie.getDirection() == Humanoid.STILL) {
 			Map<String, Integer> choices = new HashMap<String, Integer>();
-			choices.put("Still", dist[zombTX][zombTY]);
 			if(zombTX - 1 >= 0) {
 				if (map.getTileId(zombTX - 1, zombTY, 0) == 1 ) {
 					choices.put("Left", dist[zombTX-1][zombTY]);
@@ -310,7 +300,6 @@ public class PlayingState extends BasicGameState {
 					choices.put("Down", dist[zombTX][zombTY+1]);
 				}
 			}
-			
 			int distance = dist[zombTX][zombTY];
 			int NextX = zombTX;
 			int NextY = zombTY;
@@ -320,6 +309,14 @@ public class PlayingState extends BasicGameState {
 				if(choices.get("Right") <= distance) {
 					NextX++;
 					NextDir = Humanoid.RIGHT;
+				}
+			}
+			if(choices.containsKey("Down")) {
+				if(choices.get("Down") <= distance) {
+					NextY++;
+					NextDir = Humanoid.DOWN;
+					if(overlay) {
+					}
 				}
 			}
 			if(choices.containsKey("Left")) {
@@ -334,12 +331,6 @@ public class PlayingState extends BasicGameState {
 					NextDir = Humanoid.UP;
 				}
 			}
-			if(choices.containsKey("Down")) {
-				if(choices.get("Down") <= distance) {
-					NextY++;
-					NextDir = Humanoid.DOWN;
-				}
-			}
 			
 			zombie.setTileTarget(NextX, NextY);
 			zombie.setDirection(NextDir);			
@@ -348,7 +339,6 @@ public class PlayingState extends BasicGameState {
 		
 		if(survivor.collides(water) != null) {
 			water.acquire(Item.WATER);
-			game.enterState(ZombieGame.PLAYINGSTATE);
 			WATERED = true;
 		}
 		
@@ -357,7 +347,7 @@ public class PlayingState extends BasicGameState {
 			FOODED = true;
 		}
 		
-		if(survivor.collides(rope) != null) {
+		if(survivor.collides(door) != null) {
 			if(WATERED && FOODED) {
 				if(zg.level < 6) {
 					zg.level++;
@@ -365,16 +355,48 @@ public class PlayingState extends BasicGameState {
 				}
 				if(zg.level == 6) {
 					zg.enterState(ZombieGame.GAMEOVERSTATE);
+					return;
 				}
 			}
 		}
 		
 		if(survivor.collides(zombie) != null) {
-			game.enterState(ZombieGame.GAMEOVERSTATE);
+			zg.dead = true;
+			zg.enterState(ZombieGame.GAMEOVERSTATE);
+			return;
 		}
 		
 		survivor.update(delta);
 		zombie.update(delta);
+		
+		if(input.isKeyPressed(Input.KEY_1)) {
+			input.clearKeyPressedRecord();
+			zg.level = 1;
+			this.init(container, game);
+		}
+		
+		if(input.isKeyPressed(Input.KEY_2)) {
+			input.clearKeyPressedRecord();
+			zg.level = 2;
+			this.init(container, game);
+		}
+		
+		if(input.isKeyPressed(Input.KEY_3)) {
+			input.clearKeyPressedRecord();
+			zg.level = 3;
+			this.init(container, game);
+		}
+		
+		if(input.isKeyPressed(Input.KEY_4)) {
+			input.clearKeyPressedRecord();
+			zg.level = 4;
+			this.init(container, game);
+		}
+		
+		if(input.isKeyPressed(Input.KEY_5)) {
+			zg.level = 5;
+			this.init(container, game);
+		}
 		
 		
 	}
