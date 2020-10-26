@@ -7,7 +7,7 @@ public class Item extends Entity {
 
 	public static final int WATER = 0;
 	public static final int FOOD = 1;
-	public static final int ROPE = 2;
+	public static final int DOOR = 2;
 	
 	public Item(final float x, final float y, final int type) {
 		super(x, y);
@@ -19,7 +19,7 @@ public class Item extends Entity {
 			addImageWithBoundingBox(ResourceManager
 					.getImage(ZombieGame.FOODIMG_RSC));
 		}
-		if(type == ROPE) {
+		if(type == DOOR) {
 			addImageWithBoundingBox(ResourceManager
 					.getImage(ZombieGame.ROPEIMG_RSC));
 		}
@@ -34,7 +34,7 @@ public class Item extends Entity {
 			removeImage(ResourceManager
 					.getImage(ZombieGame.FOODIMG_RSC));
 		}
-		if(type == ROPE) {
+		if(type == DOOR) {
 			removeImage(ResourceManager
 					.getImage(ZombieGame.ROPEIMG_RSC));
 		}
